@@ -74,3 +74,18 @@ img{
     border-radius: 50%;
     position: relative;
 }
+
+
+.bordert{
+    border-top: 1px solid #aaa;
+    position: relative;
+}
+
+.bordert::after{
+    content: "or connect with";
+    position: absolute;
+    top: -13px;
+    left: 33%;
+    background-color: #fff;
+    padding: 0 8px;
+}
