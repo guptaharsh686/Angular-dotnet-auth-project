@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/AngularAuthAPI/.vs/AngularAuthAPI
+/AngularAuthAPI/AngularAuthAPI/obj
+/AngularAuthUI/.vscode
