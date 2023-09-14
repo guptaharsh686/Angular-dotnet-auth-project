@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {FormGroup,FormBuilder,Validators,FormControl} from '@angular/forms'
+import ValidateForm from 'src/app/helpers/validateform';
 
 @Component({
   selector: 'app-signup',
@@ -29,22 +30,12 @@ export class SignupComponent {
       console.log(this.signupForm.value);
     }else{
       console.log("Form is invalid")
-      this.validateAllFormFields(this.signupForm)
+      ValidateForm.validateAllFormFields(this.signupForm)
       alert("your form is invalid")
     }
   }
 
-  private validateAllFormFields(formGroup : FormGroup){
-    Object.keys(formGroup.controls).forEach(field => {
-      var control = formGroup.get(field);
-      if(control instanceof FormControl){
-        control.markAsDirty({onlySelf:true})
-      }
-      else if(control instanceof FormGroup){
-        this.validateAllFormFields(control);
-      }
-    })
-  }
+  
       hideShowPass(){
         this.isText = ! this.isText;
 
