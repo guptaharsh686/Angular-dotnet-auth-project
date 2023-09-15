@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import {FormBuilder,FormGroup,Validators,FormControl} from '@angular/forms'
+import { Router } from '@angular/router';
 import ValidateForm from 'src/app/helpers/validateform';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -17,7 +18,7 @@ export class LoginComponent {
 
   loginForm!: FormGroup;
 
-  constructor(private fb : FormBuilder,private auth:AuthService)
+  constructor(private fb : FormBuilder,private auth:AuthService,private router:Router)
   {
       this.loginForm = fb.group({
         username: ['',Validators.required],
@@ -34,6 +35,8 @@ export class LoginComponent {
       .subscribe({
         next: (res)=>{
           alert(res.message)
+          this.loginForm.reset();
+          this.router.navigate(['dashboard']);
         },
         error:(err)=>{
           alert(err?.error.message)
