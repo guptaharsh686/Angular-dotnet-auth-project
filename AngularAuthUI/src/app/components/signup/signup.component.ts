@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {FormGroup,FormBuilder,Validators,FormControl} from '@angular/forms'
+import { Route, Router } from '@angular/router';
 import ValidateForm from 'src/app/helpers/validateform';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -15,7 +16,7 @@ export class SignupComponent {
 
   signupForm !: FormGroup;
 
-  constructor(private fb: FormBuilder,private auth:AuthService){
+  constructor(private fb: FormBuilder,private auth:AuthService,private router:Router){
     this.signupForm = fb.group({
       firstName : ['',Validators.required],
       lastName  : ['',Validators.required],
@@ -33,6 +34,8 @@ export class SignupComponent {
       .subscribe({
         next: (res)=>{
           alert(res.message);
+          this.signupForm.reset();
+          this.router.navigate(['login']);
         },
         error: (err)=>{
           alert(err?.error.message);
