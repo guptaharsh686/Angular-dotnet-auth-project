@@ -28,7 +28,6 @@ export class SignupComponent {
 
   onSignUp(){
     if(this.signupForm.valid){
-      console.log(this.signupForm.value);
       //send to database
       this.auth.signUp(this.signupForm.value)
       .subscribe({
