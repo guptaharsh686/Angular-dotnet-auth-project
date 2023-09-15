@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import {FormBuilder,FormGroup,Validators,FormControl} from '@angular/forms'
 import ValidateForm from 'src/app/helpers/validateform';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +17,7 @@ export class LoginComponent {
 
   loginForm!: FormGroup;
 
-  constructor(private fb : FormBuilder)
+  constructor(private fb : FormBuilder,private auth:AuthService)
   {
       this.loginForm = fb.group({
         username: ['',Validators.required],
@@ -24,11 +25,20 @@ export class LoginComponent {
       })
   }
 
-  onSubmit(){
+  onLogin(){
     //console.log("onSubmit Called")
     if(this.loginForm.valid){
       console.log(this.loginForm.value);
       //send object to database
+      this.auth.login(this.loginForm.value)
+      .subscribe({
+        next: (res)=>{
+          alert(res.message)
+        },
+        error:(err)=>{
+          alert(err?.error.message)
+        }
+      })
     }
     else{
       console.log("form is not valid")

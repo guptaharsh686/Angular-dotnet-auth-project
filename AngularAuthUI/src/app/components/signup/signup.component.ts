@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {FormGroup,FormBuilder,Validators,FormControl} from '@angular/forms'
 import ValidateForm from 'src/app/helpers/validateform';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -14,7 +15,7 @@ export class SignupComponent {
 
   signupForm !: FormGroup;
 
-  constructor(private fb: FormBuilder){
+  constructor(private fb: FormBuilder,private auth:AuthService){
     this.signupForm = fb.group({
       firstName : ['',Validators.required],
       lastName  : ['',Validators.required],
@@ -24,10 +25,19 @@ export class SignupComponent {
     })
   }
 
-  onSubmit(){
+  onSignUp(){
     if(this.signupForm.valid){
-      //send to database
       console.log(this.signupForm.value);
+      //send to database
+      this.auth.signUp(this.signupForm.value)
+      .subscribe({
+        next: (res)=>{
+          alert(res.message);
+        },
+        error: (err)=>{
+          alert(err?.error.message);
+        }
+      })
     }else{
       console.log("Form is invalid")
       ValidateForm.validateAllFormFields(this.signupForm)
