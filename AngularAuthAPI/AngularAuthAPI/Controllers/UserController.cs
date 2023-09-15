@@ -1,12 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AngularAuthAPI.Context;
+using AngularAuthAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AngularAuthAPI.Controllers
 {
-    public class UserController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UserController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly AppDbContext _authContext;
+
+        public UserController(AppDbContext appDbContext)
         {
-            return View();
+            _authContext = appDbContext;
+        }
+
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate([FromBody] User userObject)
+        {
+            if (userObject == null) 
+            {
+                return BadRequest();
+            }
+
+            var user = await _authContext.Users.FirstOrDefaultAsync(x => x.Username == userObject.Username && x.Password == userObject.Password);
+            if (user == null)
+            {
+                return NotFound(new {Message = "User Not Found"});
+            }
+
+            return Ok(new
+            {
+                Message = "Login Sucess!"
+            }); ;
+
+        }
+
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] User userObject)
+        {
+            if (userObject == null)
+            {
+                return BadRequest();
+            }
+
+            await _authContext.Users.AddAsync(userObject);
+            await _authContext.SaveChangesAsync();
+            return Ok(new
+            {
+                Message = "User Registered"
+            });
         }
     }
 }
