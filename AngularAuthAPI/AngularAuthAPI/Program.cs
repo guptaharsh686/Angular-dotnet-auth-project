@@ -10,6 +10,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//configure cors 
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("MyCorsPolicy", builder =>
+    {
+        builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
+
 //configure DbContext service
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
@@ -26,6 +37,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+//adding cors to pipeline
+app.UseCors("MyCorsPolicy");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
