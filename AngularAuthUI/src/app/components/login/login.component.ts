@@ -38,6 +38,7 @@ export class LoginComponent {
           //alert(res.message)
           this.toast.success({detail:"SUCESS",summary:res.message,duration: 5000});
           this.loginForm.reset();
+          this.auth.storeToken(res.token);
           this.router.navigate(['dashboard']);
         },
         error:(err)=>{
