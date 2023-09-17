@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {FormGroup,FormBuilder,Validators,FormControl} from '@angular/forms'
 import { Route, Router } from '@angular/router';
+import { NgToastModule, NgToastService } from 'ng-angular-popup';
 import ValidateForm from 'src/app/helpers/validateform';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -16,7 +17,7 @@ export class SignupComponent {
 
   signupForm !: FormGroup;
 
-  constructor(private fb: FormBuilder,private auth:AuthService,private router:Router){
+  constructor(private fb: FormBuilder,private auth:AuthService,private router:Router,private toast:NgToastService){
     this.signupForm = fb.group({
       firstName : ['',Validators.required],
       lastName  : ['',Validators.required],
@@ -32,18 +33,22 @@ export class SignupComponent {
       this.auth.signUp(this.signupForm.value)
       .subscribe({
         next: (res)=>{
-          alert(res.message);
+          //alert(res.message);
+          this.toast.success({detail:"SUCESS",summary:res.message,duration: 5000});
           this.signupForm.reset();
           this.router.navigate(['login']);
         },
         error: (err)=>{
-          alert(err?.error.message);
+          this.toast.error({detail:"ERROR",summary:err?.error.message,duration: 5000});
+
         }
       })
     }else{
       console.log("Form is invalid")
       ValidateForm.validateAllFormFields(this.signupForm)
-      alert("your form is invalid")
+      //alert("your form is invalid")
+      this.toast.error({detail:"ERROR",summary:"Form is invalid",duration: 5000});
+
     }
   }
 
