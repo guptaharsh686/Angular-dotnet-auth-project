@@ -1,6 +1,7 @@
 ﻿using AngularAuthAPI.Context;
 using AngularAuthAPI.Helpers;
 using AngularAuthAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -108,7 +109,8 @@ namespace AngularAuthAPI.Controllers
             });
         }
 
-        [HttpGet]
+        [Authorize]
+        [HttpGet("users")]
         public async Task<ActionResult<User>> GetAllUsers()
         {
             return Ok(await _authContext.Users.ToListAsync());
@@ -158,7 +160,7 @@ namespace AngularAuthAPI.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.UtcNow.AddDays(1),
+                Expires = DateTime.UtcNow.AddSeconds(10),
                 SigningCredentials = credentials
             };
 
