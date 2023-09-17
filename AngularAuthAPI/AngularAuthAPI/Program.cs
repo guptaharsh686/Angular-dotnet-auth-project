@@ -43,7 +43,8 @@ builder.Services.AddAuthentication(opt =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Very very secret key.....")),
         ValidateAudience = false,
-        ValidateIssuer = false
+        ValidateIssuer = false,
+        ClockSkew = TimeSpan.Zero,
     };
 });
 
