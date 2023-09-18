@@ -34,12 +34,12 @@ export class SignupComponent {
       .subscribe({
         next: (res)=>{
           //alert(res.message);
-          this.toast.success({detail:"SUCESS",summary:res.message,duration: 5000});
+          this.toast.success({detail:"SUCESS",summary:res?.message,duration: 5000});
           this.signupForm.reset();
           this.router.navigate(['login']);
         },
         error: (err)=>{
-          this.toast.error({detail:"ERROR",summary:err?.error.message,duration: 5000});
+          this.toast.error({detail:"ERROR",summary:err?.message,duration: 5000});
 
         }
       })
