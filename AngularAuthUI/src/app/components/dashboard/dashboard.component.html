@@ -34,7 +34,7 @@
         <div *ngIf="role === 'Admin'" class="d-flex">
           <!-- Button trigger modal -->
           <button type="button" class="btn btn-secondary px-3" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample">
-            <i class="bi bi-text-left"></i> Toggle sidebar
+            <i class="bi bi-text-left"></i> Toggle Admin sidebar
           </button>
         </div>
         <div>
@@ -82,4 +82,32 @@
         </li>
       </ul>
     </div>
+  </div>
+
+  <div class="container mt-5" *ngIf="role === 'Admin'">
+  
+    <h2>This part is only visible to Admin User</h2>
+    <h2>All the Users in the database : </h2>
+
+    
+    <table class="table table-striped">
+      <thead>
+          <tr>
+            <th>Id</th>
+            <th>FirstName</th>
+            <th>LastName</th>
+            <th>Username</th>
+            <th>Email</th>
+          </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+            <td>{{ user.id }}</td>
+          <td>{{ user.firstname }}</td>
+          <td>{{ user.lastname }}</td>
+          <td>{{ user.username }}</td>
+          <td>{{ user.email }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
