@@ -51,6 +51,7 @@ namespace AngularAuthAPI.Controllers
             var newAccessToken = user.Token;
             var newRefreshToken = CreateRefreshToken();
             user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(5);
             await _authContext.SaveChangesAsync(); 
 
             return Ok(new TokenApiDto
@@ -120,6 +121,40 @@ namespace AngularAuthAPI.Controllers
             return Ok(await _authContext.Users.ToListAsync());
         }
 
+        [HttpPost("refresh")]
+        public async Task<ActionResult<TokenApiDto>> Refresh(TokenApiDto tokenApiDto)
+        {
+            if(tokenApiDto == null)
+            {
+                return BadRequest("Invalid Client Request");
+            }
+
+            string accessToken = tokenApiDto.AccessToken;
+            string refreshToken = tokenApiDto.RefreshToken;
+
+            var principal = GetPrincipalFromExpiredToken(accessToken);
+
+            var username = principal.Identity.Name;
+
+            var user = await _authContext.Users.FirstOrDefaultAsync(u => u.Username == username);
+
+            if(user == null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return BadRequest("Invalid Request");
+            }
+
+            var newAccessToken = CreateJwtToken(user);
+
+            var newRefreshToken = CreateRefreshToken();
+            user.RefreshToken = newRefreshToken;
+
+
+            await _authContext.SaveChangesAsync();
+
+            return Ok(new TokenApiDto { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
+
+        }
+
 
         private Task<bool> CheckUsernameExistAsync(string username) => _authContext.Users.AnyAsync(x => x.Username == username);
 
@@ -164,7 +199,7 @@ namespace AngularAuthAPI.Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = identity,
-                Expires = DateTime.UtcNow.AddSeconds(10),
+                Expires = DateTime.Now.AddSeconds(10),
                 SigningCredentials = credentials
             };
 
