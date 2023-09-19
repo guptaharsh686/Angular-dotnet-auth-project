@@ -9,25 +9,29 @@ import { UserStoreService } from 'src/app/services/user-store.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent {
-  users:any = {}
-  role : string = ''
+  users:any = [];
+  role! : string;
 
   public fullName : string = "";
   constructor(private auth: AuthService,private apiServ : ApiService,private userStore:UserStoreService){
     this.apiServ.getUsers()
-    .subscribe(res => {
+    .subscribe((res) => {
+      console.log(`get users called result ${res[0].username}`);
       this.users = res;
     })
 
     this.userStore.getFullNameFromStore()
     .subscribe(val => {
-      let fullNameFromToken = this.auth.getFullNameFromToken();
+      const fullNameFromToken = this.auth.getFullNameFromToken();
       this.fullName = val || fullNameFromToken;
     })
 
     this.userStore.getRoleFromStore()
     .subscribe(val => {
-      const roleFromToken = this.auth.decodeToken();
+      console.log(`val = ${val}`);
+      const roleFromToken = this.auth.getRoleFromToken();
+      console.log(`roleFromToken = ${roleFromToken}`);
+
       this.role = val || roleFromToken;
     })
   }

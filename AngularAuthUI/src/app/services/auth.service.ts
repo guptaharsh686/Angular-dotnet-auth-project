@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http'
 import { Router } from '@angular/router';
 import {JwtHelperService} from '@auth0/angular-jwt'
+import { TokenApiModel } from '../models/token-api.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +20,7 @@ export class AuthService {
     return this.http.post<any>(`${this.baseUrl}register`,userObj)
   }
 
-  login(loginObj:any){
+  login(loginObj:{username: string, password: string}){
     return this.http.post<any>(`${this.baseUrl}authenticate`,loginObj)
   }
 
@@ -27,8 +28,16 @@ export class AuthService {
     localStorage.setItem('token',tokenValue)
   }
 
+  storeRefreshToken(tokenValue:string){
+    localStorage.setItem('refreshToken',tokenValue)
+  }
+
   getToken(){
     return localStorage.getItem('token');
+  }
+
+  getRefreshToken(){
+    return localStorage.getItem('refreshToken');
   }
 
   isLoggedIn(): boolean{
@@ -43,7 +52,7 @@ export class AuthService {
   decodeToken(){
     const jwtHelper = new JwtHelperService();
     const token = this.getToken()!;
-    console.log(jwtHelper.decodeToken(token))
+    console.log( `Decoded token = ${JSON.stringify(jwtHelper.decodeToken(token))}`)
     return jwtHelper.decodeToken(token);
   }
 
@@ -56,9 +65,12 @@ export class AuthService {
 
   getRoleFromToken(){
     if(this.userPayload){
-      this.userPayload.role;
+      return this.userPayload.role;
     }
   }
 
+  renewToken(tokenApi : TokenApiModel){
+    return this.http.post<any>(`${this.baseUrl}refresh`,tokenApi);
+  }
 
 }

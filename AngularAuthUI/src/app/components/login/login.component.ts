@@ -39,7 +39,9 @@ export class LoginComponent {
           //alert(res.message)
           this.toast.success({detail:"SUCESS",summary:res.message,duration: 5000});
           this.loginForm.reset();
-          this.auth.storeToken(res.token);
+          console.log(`Token Recieved on login ${res}`);
+          this.auth.storeToken(res.accessToken);
+          this.auth.storeRefreshToken(res.refreshToken);
           const tokenPayload = this.auth.decodeToken();
           this.userStore.setFullNameFromStore(tokenPayload.name);
           this.userStore.setRoleForStore(tokenPayload.role);

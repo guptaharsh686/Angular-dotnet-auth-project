@@ -6,10 +6,11 @@ import {
   HttpInterceptor,
   HttpErrorResponse
 } from '@angular/common/http';
-import { Observable,catchError, throwError } from 'rxjs';
+import { Observable,catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { NgToastService } from 'ng-angular-popup';
 import { Router } from '@angular/router';
+import { TokenApiModel } from '../models/token-api.model';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
@@ -29,12 +30,46 @@ export class TokenInterceptor implements HttpInterceptor {
       catchError((err:any)=>{
         if(err instanceof HttpErrorResponse){
           if(err.status === 401){
-            this.toast.warning({detail:"Warning",summary:"Token is expired, Login again"})
-            this.router.navigate(['/login'])
+            // this.toast.warning({detail:"Warning",summary:"Token is expired, Login again"})
+            // this.router.navigate(['/login'])
+
+            //handle request
+            return this.handleUnauthorizedError(request,next);
           }
         }
         return throwError(()=> new Error("Some other error occured"))
       })
-    )
+    );
   }
+
+  handleUnauthorizedError(req : HttpRequest<any>,next : HttpHandler){
+    const accesstoken = this.auth.getToken()!;
+    const refreshtoken = this.auth.getRefreshToken()!;
+    
+    const tokenApiModel = new TokenApiModel();
+
+    tokenApiModel.accessToken = accesstoken;
+    tokenApiModel.refreshToken = refreshtoken;
+
+    return this.auth.renewToken(tokenApiModel)
+      .pipe(
+        switchMap((data) => {
+          console.log(`Token Recieved on refresh accessToken : ${data.accessToken} refreshToken : ${data.refreshToken}`);
+
+          this.auth.storeRefreshToken(data.refreshToken);
+          this.auth.storeToken(data.accessToken);
+          req = req.clone({
+            setHeaders: {Authorization : `Bearer ${data.accessToken}`}
+          });
+          return next.handle(req);
+        }),
+        catchError((err) => {
+          return throwError(() => {
+            this.toast.warning({detail:"Warning",summary:"Token is expired, Login again"})
+            this.router.navigate(['/login'])
+          })
+        })
+      )
+  }
+
 }
